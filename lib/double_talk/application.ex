@@ -7,14 +7,16 @@ defmodule DoubleTalk.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      DoubleTalkWeb.Telemetry,
-      {DNSCluster, query: Application.get_env(:double_talk, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: DoubleTalk.PubSub},
-      {Registry, keys: :unique, name: DoubleTalk.GameRooms.Registry},
-      {DynamicSupervisor, name: DoubleTalk.GameRooms.RoomSupervisor, strategy: :one_for_one},
-      DoubleTalkWeb.Endpoint
-    ]
+    children =
+      repo_children() ++
+        [
+          DoubleTalkWeb.Telemetry,
+          {DNSCluster, query: Application.get_env(:double_talk, :dns_cluster_query) || :ignore},
+          {Phoenix.PubSub, name: DoubleTalk.PubSub},
+          {Registry, keys: :unique, name: DoubleTalk.GameRooms.Registry},
+          {DynamicSupervisor, name: DoubleTalk.GameRooms.RoomSupervisor, strategy: :one_for_one},
+          DoubleTalkWeb.Endpoint
+        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -28,5 +30,13 @@ defmodule DoubleTalk.Application do
   def config_change(changed, _new, removed) do
     DoubleTalkWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp repo_children do
+    if Application.get_env(:double_talk, :start_repo, true) do
+      [DoubleTalk.Repo]
+    else
+      []
+    end
   end
 end

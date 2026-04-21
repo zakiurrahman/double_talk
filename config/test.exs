@@ -1,5 +1,7 @@
 import Config
 
+config :double_talk, start_repo: false
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

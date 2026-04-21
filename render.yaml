@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: double-talk
+    env: elixir
+    plan: free
+    buildCommand: ./build.sh
+    preDeployCommand: _build/prod/rel/double_talk/bin/double_talk eval "DoubleTalk.Release.migrate"
+    startCommand: _build/prod/rel/double_talk/bin/server
+    autoDeploy: true
+    envVars:
+      - key: ELIXIR_VERSION
+        value: 1.18.4
+      - key: ERLANG_VERSION
+        value: 28.0.2
+      - key: MIX_ENV
+        value: prod
+      - key: PHX_SERVER
+        value: "true"
+      - key: POOL_SIZE
+        value: "10"
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: PHX_HOST
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: double-talk-db
+          property: connectionString
+
+databases:
+  - name: double-talk-db
+    plan: free
