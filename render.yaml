@@ -5,7 +5,7 @@ services:
     plan: free
     buildCommand: ./build.sh
     preDeployCommand: _build/prod/rel/double_talk/bin/double_talk eval "DoubleTalk.Release.migrate"
-    startCommand: _build/prod/rel/double_talk/bin/server
+    startCommand: _build/prod/rel/double_talk/bin/double_talk start
     autoDeploy: true
     envVars:
       - key: ELIXIR_VERSION
